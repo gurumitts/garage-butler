@@ -8,17 +8,26 @@ import os
 
 app = Flask(__name__)
 
-
 logs_location = '/var/log/garage'
+
 
 @app.route('/')
 def index(name=None):
     return render_template('index1.html')
 
 
-@app.route('/hello')
+@app.route('/status')
 def hello(name=None):
-    return 'ok'
+    db = DataStore()
+    status = db.get_status()
+    return json.dumps(status)
+
+
+@app.route('/events')
+def hello(name=None):
+    db = DataStore()
+    events = db.get_status()
+    return json.dumps(events)
 
 
 @app.route('/logs/')

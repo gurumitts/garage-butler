@@ -31,7 +31,7 @@ class DataStore:
 
     def get_events(self):
         cursor = self.connection.cursor()
-        cursor.execute("""SELECT * FROM events order by DT desc""")
+        cursor.execute("""select datetime(dt,'localtime') as dt, event from events order by dt desc limit 100""")
         rows = cursor.fetchall()
         events = []
         if rows is not None:
@@ -45,17 +45,16 @@ class DataStore:
 
     def get_status(self):
         cursor = self.connection.cursor()
-        cursor.execute("""SELECT * FROM events order by DT desc""")
-        rows = cursor.fetchall()
-        events = []
-        if rows is not None:
-            for row in rows:
-                event = {}
-                for key in row.keys():
-                    event[key.lower()] = row[key]
-                events.append(event)
+        cursor.execute("""select datetime(dt,'localtime') as dt, event,
+                            (strftime('%s','now') - strftime('%s',dt))/60 as
+                            elapsed_minutes from events order by dt desc limit 1""")
+        row = cursor.fetchone()
+        status = {}
+        if row is not None:
+            for key in row.keys():
+                status[key.lower()] = row[key]
             cursor.close()
-        return events
+        return status
 
     def shutdown(self):
         self.connection.commit()
