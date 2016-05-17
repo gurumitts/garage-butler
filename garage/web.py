@@ -17,14 +17,14 @@ def index(name=None):
 
 
 @app.route('/status')
-def hello(name=None):
+def status(name=None):
     db = DataStore()
     status = db.get_status()
     return json.dumps(status)
 
 
 @app.route('/events')
-def hello(name=None):
+def events(name=None):
     db = DataStore()
     events = db.get_status()
     return json.dumps(events)
