@@ -1,6 +1,5 @@
 from flask import Flask
-from flask import render_template, request, Response
-import math
+from flask import render_template, Response
 from datastore import DataStore
 import json
 import logging
@@ -26,7 +25,7 @@ def status(name=None):
 @app.route('/events')
 def events(name=None):
     db = DataStore()
-    events = db.get_status()
+    events = db.get_events()
     return json.dumps(events)
 
 
