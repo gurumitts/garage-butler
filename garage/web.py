@@ -9,16 +9,12 @@ import os
 app = Flask(__name__)
 
 
-
 logs_location = '/var/log/garage'
 
 @app.route('/')
 def index(name=None):
-    db = DataStore()
-    settings = db.get_settings()
-    db.shutdown()
+    return render_template('index1.html')
 
-    return render_template('index1.html', )
 
 @app.route('/hello')
 def hello(name=None):
@@ -39,6 +35,7 @@ def view_log(log=None):
     fo = open('%s/%s' %(logs_location, log), 'r')
     contents = fo.read()
     return Response(contents, mimetype='text/plain')
+
 
 def start():
     # app.debug = True
