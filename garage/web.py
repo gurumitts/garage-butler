@@ -12,7 +12,10 @@ logs_location = '/var/log/garage'
 
 @app.route('/')
 def index(name=None):
-    return render_template('index1.html')
+    db = DataStore()
+    status = db.get_status()
+    events = db.get_events()
+    return render_template('index.html', events=events, status=status)
 
 
 @app.route('/status')
@@ -46,5 +49,5 @@ def view_log(log=None):
 
 
 def start():
-    # app.debug = True
+    app.debug = True
     app.run(host='0.0.0.0')

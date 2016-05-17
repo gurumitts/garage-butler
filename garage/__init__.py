@@ -1,7 +1,7 @@
 import logging
 from logging.config import fileConfig
 import web
-from butler import Butler
+#from butler import Butler
 from datastore import DataStore
 
 def start():
@@ -14,7 +14,7 @@ def start():
     logging.getLogger('garage').log(logging.DEBUG, 'Complete')
 
 
-    butler = Butler()
+ #   butler = Butler()
 
     web.start()
 

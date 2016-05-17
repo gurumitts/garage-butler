@@ -63,3 +63,4 @@ target/
 
 .idea
 aws_creds
+app.sqlite3.db
