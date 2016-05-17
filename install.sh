@@ -1,10 +1,5 @@
 #!/bin/sh
 
-if [[ $EUID -ne 0 ]]; then
-   echo "This script must be run as root" 1>&2
-   exit 1
-fi
-
 GARAGE_HOME=/opt/garage-butler
 GARAGE_BIN=${GARAGE_HOME}/bin
 GARAGE_LOGS_DIR=/var/log/garage
