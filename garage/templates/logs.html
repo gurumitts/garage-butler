@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
+</head>
+<style>
+
+    h4 {
+    margin-top: 25px;
+    }
+    .row {
+    margin-bottom: 20px;
+    }
+    .row .row {
+    margin-top: 10px;
+    margin-bottom: 0;
+    }
+
+
+    hr {
+    margin-top: 40px;
+    margin-bottom: 40px;
+    }
+
+
+</style>
+<body>
+<div class="container">
+
+    <div class="page-header">
+        <h1>Pyrokinesis</h1>
+    </div>
+
+    <p class="lead">Logs:
+
+    </p>
+
+    <ul id="navigation">
+    {% for log in logs %}
+        <li><a href="/logs/{{ log }}">{{ log }}</a></li>
+    {% endfor %}
+    </ul>
+
+
+
+
+
+
+    <p class="lead">
+        <a href="/" class="btn btn-primary btn-xs" role="button">Home</a>
+    </p>
+
+
+</div>
+</body>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+
+
+</script>

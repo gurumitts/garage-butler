@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
+</head>
+<style>
+
+    h4 {
+    margin-top: 25px;
+    }
+    .row {
+    margin-bottom: 20px;
+    }
+    .row .row {
+    margin-top: 10px;
+    margin-bottom: 0;
+    }
+
+
+    hr {
+    margin-top: 40px;
+    margin-bottom: 40px;
+    }
+
+
+</style>
+<body>
+<div class="container">
+
+    <div class="page-header">
+        <h1>Pyrokinesis</h1>
+    </div>
+
+    <p class="lead">Temperature current:
+        <span style="color: navy" id="currentTemp" data-bind="text: currentTemp"></span>,
+        Average: <span class="text-info" id="averageTemp" data-bind="text: averageTemp"></span>,
+        Target: <span class="text-danger" id="targetTemp" data-bind="text: targetTemp"></span>
+        <br/> Heat source is
+        <span id="heatSource" data-bind="text: heatSource,
+                css: { 'text-danger': heatSource() == 'on' , 'text-primary': heatSource() == 'off' }">---</span>
+        <br/> Control program is
+        <span id="program" data-bind="text: enabled() == 1 ? 'running' : 'stopped',
+                css: { 'text-danger': enabled() == '1' , 'text-primary': enabled() == '0' }">---</span></p>
+
+    <div class="row">
+
+        <div class="col-md-12">
+            <div id='chart'>
+                <canvas id="mycanvas" width="900" height="400"></canvas>
+            </div>
+        </div>
+    </div>
+    <p class="lead">
+
+        <input id="enabled" type="checkbox" data-bind="checked: enabled, click: saveEnabled"/>Enabled
+
+        <button class="btn btn-primary btn-xs" id="mod" data-toggle="modal" data-target="#myModal">
+            Settings
+        </button>
+        <button class="btn btn-primary btn-xs" id="autoRefresh">
+            Auto Refresh
+        </button>
+        <a href="/history" class="btn btn-primary btn-xs" role="button">History</a>
+        <a href="/editprofiles" class="btn btn-primary btn-xs" role="button">Edit Profiles</a>
+        <a href="/logs" class="btn btn-primary btn-xs" role="button">View Logs</a>
+    </p>
+
+    <div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                                class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Settings</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form class="form-horizontal" role="form">
+                            <div class="form-group">
+                                <div class="col-sm-offset-3 col-sm-9">
+
+                                </div>
+                            </div>
+                            <div class="form-group" >
+
+                                <label for="profiles" class="col-sm-5 control-label">Profile</label>
+
+                                <div class="col-sm-6">
+                                    <select  class="form-control" id="profiles" data-bind="options: profiles,
+                                                       optionsText: 'name',
+                                                       optionsValue: 'id',
+                                                       value: activeProfile"></select>
+
+                                </div>
+
+                                <div data-bind="with: settings">
+                                <label for="target_temp" class="col-sm-5 control-label">Target Temp</label>
+                                <br/>
+                                <div class="col-sm-6">
+                                    <input type="input" class="form-control" id="target_temp"
+                                           placeholder="205" data-bind="value: target_temp"/>
+                                </div>
+
+                                <label for="sample_size" class="col-sm-5 control-label">Sample Size</label>
+
+                                <div class="col-sm-6">
+                                    <input type="input" class="form-control" id="sample_size"
+                                           placeholder="20" data-bind="value: sample_size"/>
+                                </div>
+
+                                <label for="tolerance" class="col-sm-5 control-label">Tolerance(deg F)</label>
+
+                                <div class="col-sm-6">
+                                    <input type="input" class="form-control" id="tolerance"
+                                           placeholder="in degrees" data-bind="value: tolerance"/>
+                                </div>
+
+                                <label for="heat_duration" class="col-sm-5 control-label">Heat Duration(ms)</label>
+
+                                <div class="col-sm-6">
+                                    <input type="input" class="form-control" id="heat_duration"
+                                           placeholder="in degrees" data-bind="value: heat_duration"/>
+                                </div>
+
+                                <label for="cool_duration" class="col-sm-5 control-label">Cool Duration(ms)</label>
+
+                                <div class="col-sm-6">
+                                    <input type="input" class="form-control" id="cool_duration"
+                                           placeholder="in degrees" data-bind="value: cool_duration"/>
+                                </div>
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" id="save-settings" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-min.js"></script>
+
+<script>
+
+
+function pad2(number) { return (number < 10 ? '0' : '') + number }
+function timeFormatter(date) {
+    return pad2(date.getMinutes()) + ':' + pad2(date.getSeconds())
+}
+
+var format = d3.time.format("%Y-%m-%d %H:%M:%S")
+
+var temps = new TimeSeries();
+var avg_temps = new TimeSeries();
+var target_temp = new TimeSeries();
+
+var smoothie = new SmoothieChart({grid:{fillStyle:'rgba(86,61,124,.15)',millisPerLine:5000,verticalSections:4},
+    timestampFormatter:timeFormatter,
+    labels:{fontSize:15,fillStyle:'#000000'},
+    minValue:{{min_temp}},
+    maxValue:{{max_temp}}})
+smoothie.streamTo(document.getElementById("mycanvas"),1000);
+
+smoothie.addTimeSeries(avg_temps, {lineWidth:2,strokeStyle:'#8080c0',fillStyle:'rgba(128,128,255,0.50)'});
+smoothie.addTimeSeries(temps, {lineWidth:2,strokeStyle:'navy'});
+smoothie.addTimeSeries(target_temp, {lineWidth:2,strokeStyle:'#ff0000'});
+
+
+function pyroModel(){
+    this.currentTemp = ko.observable('---');
+    this.averageTemp = ko.observable('---');
+    this.targetTemp = ko.observable({{target_temp}});
+    this.heatSource = ko.observable('---');
+    this.enabled = ko.observable({{enabled}});
+    this.settings = ko.observable();
+    this.profiles = ko.observableArray();
+    this.activeProfile = ko.observable();
+
+    this.activeProfile.subscribe(function(newValue) {
+        newActive = null;
+        this.profiles().forEach(function(profile){
+            if(profile['id'] == newValue){
+                newActive = profile;
+            }
+        })
+        this.settings(newActive)
+    }, this);
+
+    this.saveEnabled = function(newValue) {
+        console.log('enabled save')
+        saveEnabled()
+    };
+
+
+}
+
+var pyro = new pyroModel();
+
+
+var idx = 1
+function reload(){
+    d3.json("/temps/"+idx, function(error, json) {
+        if (error) return console.warn(error);
+        current_idx = 0
+        json.forEach(function(d) {
+            d.dt = format.parse(d['dt']);
+            d.temp = +d['temp'];
+            d.avg_temp = +d['avg_temp']
+            temps.append(d.dt,d.temp)
+            avg_temps.append(d.dt,d.avg_temp)
+        });
+
+        resp_size = json.length;
+        if(resp_size > 0){
+            current = json[resp_size-1]
+            idx = current['id']
+            pyro.currentTemp(current['temp'].toFixed(3) )
+            pyro.averageTemp(current['avg_temp'].toFixed(1))
+            pyro.heatSource(current['heat_source'])
+            pyro.enabled(current['enabled'])
+
+        }
+        target_temp.append(new Date(),pyro.targetTemp())
+    });
+}
+
+
+var autoReloadStatus = 0
+var autoReload = null
+function toggleAutoReload() {
+    if(autoReloadStatus == 0){
+        autoReload = setInterval(function(){reload()}, 2000);
+        autoReloadStatus = 1
+    }else{
+        clearInterval(autoReload);
+        autoReloadStatus = 0
+    }
+}
+
+toggleAutoReload()
+
+function saveSettings(e,s) {
+    var body = pyro.settings()
+    console.log(body)
+    $.ajax({
+        type:   'POST'  ,
+        url:   '/settings',
+        data:   JSON.stringify(body),
+        contentType:   'application/json',
+        success:   function(data){
+            console.log(data)
+            if(data == 'ok'){
+                if(e && e.target.id == 'save-settings'){
+                    $("#myModal").modal("hide")
+                    location.reload()
+                }
+            }else{
+                alert('Settings not saved: '+data)
+            }
+        }
+    });
+}
+
+function saveEnabled(e,s) {
+    var body = pyro.settings()
+    body['enabled'] = pyro.enabled()
+    console.log(body)
+    $.ajax({
+        type:   'POST'  ,
+        url:   '/enabled',
+        data:   JSON.stringify(body),
+        contentType:   'application/json',
+        success:   function(data){
+            console.log(data)
+            if(data != 'ok'){
+                alert('Settings not saved: '+data)
+            }
+        }
+    });
+}
+
+$( "#save-settings" ).click(saveSettings);
+
+function setTimeRangeToDisplay(e){
+    id = e.target.id
+    if(id == 'autoRefresh'){
+        toggleAutoReload()
+    }else if(id=='mod'){
+        //ignore
+    }else{
+        //broken
+    }
+}
+
+
+function loadProfiles() {
+    $.ajax({
+        type:   'GET'  ,
+        url:   '/profiles',
+        contentType:   'application/json',
+        success:   function(data){
+            console.log(data)
+            profiles = JSON.parse(data)
+            pyro.profiles.removeAll()
+            profiles.forEach(function(row){
+                pyro.profiles.push(row)
+                if(row['active'] == 1){
+                    pyro.activeProfile(row['id'])
+                }
+            })
+        }
+    })
+};
+
+
+$('#myModal').on('show.bs.modal', loadProfiles )
+$( ".btn" ).click(setTimeRangeToDisplay)
+//$("#enabled").on('click',saveSettings )
+ko.applyBindings(pyro)
+loadProfiles()
+
+</script>
