@@ -9,7 +9,7 @@ if [ -d ${GARAGE_HOME} ]; then
     git pull
 else
     cd /opt
-    git https://github.com/gurumitts/garage-butler.git
+    git clone https://github.com/gurumitts/garage-butler.git
     cd ${GARAGE_HOME}
     git pull
 fi
