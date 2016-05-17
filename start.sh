@@ -7,7 +7,7 @@ fi
 
 git pull
 
-rm -f db/app.sqlite3.db
+#rm -f db/app.sqlite3.db
 
 source aws_creds
 
