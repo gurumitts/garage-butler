@@ -26,7 +26,7 @@ class Butler:
         logging.getLogger('garage').info('Butler is starting...')
         GPIO.add_event_detect(button_pin, GPIO.FALLING, callback=self.door_check, bouncetime=1000)
         scheduler.start()
-        scheduler.add_job(self.track, 'interval', seconds=2)
+        scheduler.add_job(self.status_check, 'interval', minutes=2)
 
     def door_check(self, channel):
         status = GPIO.input(button_pin)
