@@ -39,6 +39,7 @@
         {% if status.event == 'door closed' %}
             <span class="text-primary">Closed</span>
         {% endif %}
+    </p>
 
     {% for event in events %}
     <div class="row">
@@ -50,7 +51,7 @@
 
     <p class="lead">
         <a onclick="toggle(this)" class="btn btn-primary " role="button">Toggle Switch</a>
-        </p>
+        <br/>
         <a href="/" class="btn btn-primary btn-xs" role="button">Refresh</a>
         <a href="/logs" class="btn btn-primary btn-xs" role="button">View Logs</a>
     </p>
@@ -59,12 +60,21 @@
 </div>
 </body>
 
-<script src="https://raw.githubusercontent.com/yanatan16/nanoajax/master/nanoajax.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/qwest/4.4.2/qwest.min.js"></script>
 <script>
 
     function toggle(link){
         console.log(link);
         link.onclick = null;
+        qwest.post('/toggle', {
+            toggle: 'true'
+         })
+         .then(function(xhr, response) {
+            console.log(response)
+         })
+         .catch(function(e, xhr, response) {
+            console.log("error" + response)
+         });
     }
 
 </script>

@@ -1,5 +1,5 @@
 from flask import Flask
-from flask import render_template, Response
+from flask import render_template, Response, request
 from datastore import DataStore
 import json
 import logging
@@ -41,6 +41,18 @@ def logs(log=None):
     return render_template('logs.html', logs=logs)
 
 
+@app.route('/toggle', methods=['POST'])
+def toggle():
+    if request.method == 'POST':
+        logging.getLogger('garage').info('toggle switch')
+        if butler is not None:
+            butler.toggle_switch()
+            return 'ok'
+        else:
+            return 'no butler'
+    return 'ko'
+
+
 @app.route('/logs/<log>')
 def view_log(log=None):
     fo = open('%s/%s' %(logs_location, log), 'r')
@@ -48,6 +60,8 @@ def view_log(log=None):
     return Response(contents, mimetype='text/plain')
 
 
-def start():
-    app.debug = True
+def start(_butler):
+    global butler
+    butler = _butler
+    # app.debug = True
     app.run(host='0.0.0.0')

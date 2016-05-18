@@ -6,13 +6,18 @@ from apscheduler.schedulers.background import BackgroundScheduler
 
 scheduler = BackgroundScheduler()
 
-# gpio pin for door sensor
+# gpio pin for door sensor and relay
 button_pin = 19
+relay_pin = 16
 
 #set up gpio
 print GPIO.VERSION
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(button_pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(relay_pin, GPIO.OUT)
+
+# minutes before sending warning
+WARNING_OPEN_MINS = 15
 
 
 def get_db():
@@ -39,5 +44,20 @@ class Butler:
             logging.getLogger('garage').info('Door opened')
         db.shutdown()
 
+
     def status_check(self):
         logging.getLogger('garage').info('checking status')
+        db = get_db()
+        status = db.get_status()
+        logging.getLogger('garage').info('status is %s' % status)
+        if status['event'] == 'door opened' and status['elapsed_minutes'] > WARNING_OPEN_MINS:
+            logging.getLogger('garage').info('sending notification')
+        else:
+            logging.getLogger('garage').info('nothing to do')
+
+
+    def toggle_switch(self):
+        logging.getLogger('garage').info('toggle switch')
+        GPIO.output(relay_pin, 0)
+        time.sleep(.25)
+        GPIO.output(relay_pin, 1)
