@@ -15,6 +15,7 @@ print GPIO.VERSION
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(button_pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(relay_pin, GPIO.OUT)
+GPIO.output(relay_pin, 1)
 
 # minutes before sending warning
 WARNING_OPEN_MINS = 15
