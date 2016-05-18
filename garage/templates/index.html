@@ -40,6 +40,13 @@
             <span class="text-primary">Closed</span>
         {% endif %}
     </p>
+    
+    <p class="lead">
+        <a onclick="toggle(this)" class="btn btn-primary " role="button">Toggle Switch</a>
+        <br/>
+        <a href="/" class="btn btn-primary btn-xs" role="button">Refresh</a>
+        <a href="/logs" class="btn btn-primary btn-xs" role="button">View Logs</a>
+    </p>
 
     {% for event in events %}
     <div class="row">
@@ -49,12 +56,7 @@
     </div>
     {% endfor %}
 
-    <p class="lead">
-        <a onclick="toggle(this)" class="btn btn-primary " role="button">Toggle Switch</a>
-        <br/>
-        <a href="/" class="btn btn-primary btn-xs" role="button">Refresh</a>
-        <a href="/logs" class="btn btn-primary btn-xs" role="button">View Logs</a>
-    </p>
+
 
 
 </div>
