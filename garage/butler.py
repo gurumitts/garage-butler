@@ -21,7 +21,7 @@ GPIO.setup(relay_pin, GPIO.OUT)
 GPIO.output(relay_pin, 1)
 
 # minutes before sending warning
-WARNING_OPEN_MINS = 5
+WARNING_OPEN_MINS = 15
 
 # aws vars
 REGION = 'us-east-1'
