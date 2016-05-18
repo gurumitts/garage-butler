@@ -44,7 +44,7 @@ def logs(log=None):
 @app.route('/toggle', methods=['POST'])
 def toggle():
     if request.method == 'POST':
-        logging.getLogger('garage').info('toggle switch')
+        logging.getLogger('garage').info('toggle switch web')
         if butler is not None:
             butler.toggle_switch()
             return 'ok'

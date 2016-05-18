@@ -4,6 +4,7 @@ from datastore import DataStore
 import logging
 from apscheduler.schedulers.background import BackgroundScheduler
 import boto
+import boto.sns
 import os
 
 scheduler = BackgroundScheduler()
@@ -53,7 +54,6 @@ class Butler:
             logging.getLogger('garage').info('Door opened')
         db.shutdown()
 
-
     def status_check(self):
         logging.getLogger('garage').info('checking status')
         db = get_db()
@@ -65,15 +65,13 @@ class Butler:
         else:
             logging.getLogger('garage').info('nothing to do')
 
-
     def toggle_switch(self):
         logging.getLogger('garage').info('toggle switch')
         GPIO.output(relay_pin, 0)
         time.sleep(.25)
         GPIO.output(relay_pin, 1)
 
-
     def _notify(self, status):
-        msg = 'Door has been open for %s mins' % status.elapsed_minutes
+        msg = 'Door has been open for %s mins' % status['elapsed_minutes']
         conn = boto.sns.connect_to_region(REGION)
-        pub = conn.publish(topic=TOPIC, subject=msg)
+        pub = conn.publish(topic=TOPIC, message=msg)
