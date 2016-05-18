@@ -6,3 +6,4 @@
 
 export AWS_ACCESS_KEY_ID=<your id>
 export AWS_SECRET_ACCESS_KEY=<your key>
+export SNS_TOPIC_ARN=<your arn>

@@ -3,6 +3,8 @@ import time
 from datastore import DataStore
 import logging
 from apscheduler.schedulers.background import BackgroundScheduler
+import boto
+import os
 
 scheduler = BackgroundScheduler()
 
@@ -18,7 +20,12 @@ GPIO.setup(relay_pin, GPIO.OUT)
 GPIO.output(relay_pin, 1)
 
 # minutes before sending warning
-WARNING_OPEN_MINS = 15
+WARNING_OPEN_MINS = 5
+
+# aws vars
+REGION = 'us-east-1'
+TOPIC = os.environ['SNS_TOPIC_ARN']
+
 
 
 def get_db():
@@ -30,6 +37,7 @@ class Butler:
 
     def __init__(self):
         logging.getLogger('garage').info('Butler is starting...')
+        logging.getLogger('garage').info('AWS: region=%s, topic=%s' % (REGION, TOPIC))
         GPIO.add_event_detect(button_pin, GPIO.FALLING, callback=self.door_check, bouncetime=1000)
         scheduler.start()
         scheduler.add_job(self.status_check, 'interval', minutes=2)
@@ -53,6 +61,7 @@ class Butler:
         logging.getLogger('garage').info('status is %s' % status)
         if status['event'] == 'door opened' and status['elapsed_minutes'] > WARNING_OPEN_MINS:
             logging.getLogger('garage').info('sending notification')
+            self._notify(status)
         else:
             logging.getLogger('garage').info('nothing to do')
 
@@ -62,3 +71,9 @@ class Butler:
         GPIO.output(relay_pin, 0)
         time.sleep(.25)
         GPIO.output(relay_pin, 1)
+
+
+    def _notify(self, status):
+        msg = 'Door has been open for %s mins' % status.elapsed_minutes
+        conn = boto.sns.connect_to_region(REGION)
+        pub = conn.publish(topic=TOPIC, subject=msg)
