@@ -1,0 +1,8 @@
+##
+# To get started:
+# -Copy aws_creds.default to aws_creds
+# -Change the values below to match your id and key
+##
+
+export AWS_ACCESS_KEY_ID=<your id>
+export AWS_SECRET_ACCESS_KEY=<your key>
