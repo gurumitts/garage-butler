@@ -31,7 +31,7 @@ class DataStore:
 
     def get_events(self):
         cursor = self.connection.cursor()
-        cursor.execute("""select datetime(dt,'localtime') as dt, event from events order by dt desc limit 100""")
+        cursor.execute("""select datetime(dt,'localtime') as dt, event from events order by dt desc limit 15""")
         rows = cursor.fetchall()
         events = []
         if rows is not None:
@@ -56,6 +56,20 @@ class DataStore:
             cursor.close()
         return status
 
+    def get_settings(self):
+        cursor = self.connection.cursor()
+        cursor.execute("""select * from settings""")
+        rows = cursor.fetchall()
+        settings = []
+        if rows is not None:
+            for row in rows:
+                event = {}
+                for key in row.keys():
+                    event[key.lower()] = row[key]
+                settings.append(event)
+            cursor.close()
+        return settings
+
     def shutdown(self):
         self.connection.commit()
         self.connection.close()
@@ -74,3 +88,23 @@ class DataStore:
             logging.info('done!')
         finally:
             cursor.close()
+            self.connection.commit()
+
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute('select count(*) from settings')
+            # print cursor.fetchone()
+        except Exception as e:
+            logging.getLogger('garage').info('Required table not found... creating settings table...')
+            cursor.execute("""CREATE TABLE "settings" (
+                    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+                    "check_interval_mins" INTEGER DEFAULT (2),
+                    "notify_interval_mins" INTEGER DEFAULT (30),
+                    "warning_threshold_mins" INTEGER DEFAULT (15),
+                    "sentry_mode" INTEGER DEFAULT (0))""")
+            self.connection.commit()
+            cursor.execute('insert into settings (id) values (1)')
+            logging.info('done!')
+        finally:
+            cursor.close()
+            self.connection.commit()
