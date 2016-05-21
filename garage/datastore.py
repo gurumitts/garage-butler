@@ -58,15 +58,12 @@ class DataStore:
 
     def get_settings(self):
         cursor = self.connection.cursor()
-        cursor.execute("""select * from settings""")
-        rows = cursor.fetchall()
-        settings = []
-        if rows is not None:
-            for row in rows:
-                event = {}
-                for key in row.keys():
-                    event[key.lower()] = row[key]
-                settings.append(event)
+        cursor.execute("""select * from settings limit 1""")
+        row = cursor.fetchall()
+        settings = {}
+        if row is not None:
+            for key in row.keys():
+                settings[key.lower()] = row[key]
             cursor.close()
         return settings
 
