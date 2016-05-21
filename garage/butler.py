@@ -45,8 +45,10 @@ class Butler:
         self.last_status = GPIO.input(button_pin)
 
     def door_check(self, channel):
+        time.sleep(2)
         status = GPIO.input(button_pin)
         db = get_db()
+        logging.getLogger('garage').info('status = %s, last status = %s' % (status, self.last_status))
         if status == 1:
             if status != self.last_status:
                 db.record_door_closed()
