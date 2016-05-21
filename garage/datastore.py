@@ -59,7 +59,7 @@ class DataStore:
     def get_settings(self):
         cursor = self.connection.cursor()
         cursor.execute("""select * from settings limit 1""")
-        row = cursor.fetchall()
+        row = cursor.fetchone()
         settings = {}
         if row is not None:
             for key in row.keys():
