@@ -41,7 +41,7 @@ class Butler:
         GPIO.add_event_detect(button_pin, GPIO.FALLING, callback=self.door_check, bouncetime=1000)
         scheduler.start()
         scheduler.add_job(self.status_check, 'interval', minutes=2)
-        self.last_notification = datetime.datetime.now()
+        self.last_notification = datetime.strptime('Jun 1 2005  1:00PM', '%b %d %Y %I:%M%p')
         self.last_status = GPIO.input(button_pin)
 
     def door_check(self, channel):
