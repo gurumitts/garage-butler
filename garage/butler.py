@@ -95,5 +95,5 @@ class Butler:
                                              (settings['notify_interval_mins'], notification_mins))
 
     def _mins_since_last_notification(self):
-        delta = datetime.datetime.now() - last_notification
+        delta = datetime.datetime.now() - self.last_notification
         return delta.total_seconds()/60
