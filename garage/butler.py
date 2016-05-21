@@ -72,8 +72,10 @@ class Butler:
         db.shutdown()
         logging.getLogger('garage').info('status is %s' % status)
         logging.getLogger('garage').info('setting are %s' % settings)
-        logging.getLogger('garage').info('send? %s' % status['elapsed_minutes'] > settings['warning_threshold_mins'])
-        if status['event'] == 'door opened' and status['elapsed_minutes'] > settings['warning_threshold_mins']:
+        logging.getLogger('garage').info('send? %s' %
+                                         int(status['elapsed_minutes']) > int(settings['warning_threshold_mins']))
+        if status['event'] == 'door opened' and \
+                        int(status['elapsed_minutes']) > int(settings['warning_threshold_mins']):
             logging.getLogger('garage').info('sending notification')
             self._notify(status, settings)
         else:
