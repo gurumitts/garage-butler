@@ -41,12 +41,14 @@ class Butler:
         GPIO.add_event_detect(button_pin, GPIO.FALLING, callback=self.door_check, bouncetime=1000)
         scheduler.start()
         scheduler.add_job(self.status_check, 'interval', minutes=2)
-        self.last_notification = datetime.datetime.now()
+        self.last_notification = datetime.datetime.strptime('Jun 1 2005  1:00PM', '%b %d %Y %I:%M%p')
         self.last_status = GPIO.input(button_pin)
 
     def door_check(self, channel):
+        time.sleep(2)
         status = GPIO.input(button_pin)
         db = get_db()
+        logging.getLogger('garage').info('status = %s, last status = %s' % (status, self.last_status))
         if status == 1:
             if status != self.last_status:
                 db.record_door_closed()
@@ -69,7 +71,11 @@ class Butler:
         settings = db.get_settings()
         db.shutdown()
         logging.getLogger('garage').info('status is %s' % status)
-        if status['event'] == 'door opened' and status['elapsed_minutes'] > settings['warning_threshold_mins']:
+        logging.getLogger('garage').info('setting are %s' % settings)
+        logging.getLogger('garage').info('send? %s' %
+                                         int(status['elapsed_minutes']) > int(settings['warning_threshold_mins']))
+        if status['event'] == 'door opened' and \
+                        int(status['elapsed_minutes']) > int(settings['warning_threshold_mins']):
             logging.getLogger('garage').info('sending notification')
             self._notify(status, settings)
         else:
