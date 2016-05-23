@@ -45,22 +45,24 @@ class Butler:
         self.last_status = GPIO.input(button_pin)
 
     def door_check(self, channel):
-        time.sleep(2)
+        time.sleep(3)
         status = GPIO.input(button_pin)
         db = get_db()
-        logging.getLogger('garage').info('status = %s, last status = %s' % (status, self.last_status))
+        # logging.getLogger('garage').info('status = %s, last status = %s' % (status, self.last_status))
         if status == 1:
             if status != self.last_status:
                 db.record_door_closed()
                 logging.getLogger('garage').info('Door closed')
             else:
-                logging.getLogger('garage').info('Door closed again')
+                pass
+                # logging.getLogger('garage').info('Door closed again')
         else:
             if status != self.last_status:
                 db.record_door_opened()
                 logging.getLogger('garage').info('Door opened')
             else:
-                logging.getLogger('garage').info('Door opened again')
+                pass
+                # logging.getLogger('garage').info('Door opened again')
         self.last_status = status
         db.shutdown()
 
