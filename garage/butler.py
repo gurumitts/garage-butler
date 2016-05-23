@@ -82,7 +82,7 @@ class Butler:
         GPIO.output(relay_pin, 1)
 
     def _notify(self, status, settings):
-        notification_mins = self._mins_since_last_notification
+        notification_mins = self._mins_since_last_notification()
         if notification_mins >= settings['notify_interval_mins']:
             msg = 'Door has been open for %s mins' % status['elapsed_minutes']
             conn = boto.sns.connect_to_region(REGION)
@@ -95,5 +95,5 @@ class Butler:
                                              (settings['notify_interval_mins'], notification_mins))
 
     def _mins_since_last_notification(self):
-        delta = datetime.datetime.now() - last_notification
+        delta = datetime.datetime.now() - self.last_notification
         return delta.total_seconds()/60
