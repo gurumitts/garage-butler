@@ -36,14 +36,14 @@
 
     <div class="row">
         <div class="col-xs-12">
-            <h4>Status
+            <h2>Status
                 {% if status.event == 'door opened' %}
                 <span class="text-danger">Open</span>
                 {% endif %}
                 {% if status.event == 'door closed' %}
                 <span class="text-primary">Closed</span>
                 {% endif %}
-            </h4>
+            </h2>
         </div>
     </div>
 
@@ -66,7 +66,7 @@
     {% for event in events %}
     <div class="row">
         <div class="col-xs-12">
-            {{ event.event }} {{event.dt | time_delta}} ago
+            <h3>{{ event.event }} {{event.dt | time_delta}} ago</h3>
         </div>
     </div>
     {% endfor %}
