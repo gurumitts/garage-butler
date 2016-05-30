@@ -3,6 +3,7 @@
 <head>
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <style>
 
@@ -32,6 +33,7 @@
         <h1>Garage Butler</h1>
     </div>
 
+    <div class="row">
     <p class="lead">Status
         {% if status.event == 'door opened' %}
             <span class="text-danger">Open</span>
@@ -40,18 +42,21 @@
             <span class="text-primary">Closed</span>
         {% endif %}
     </p>
+    </div>
 
+    <div class="row">
     <p class="lead">
         <a onclick="toggle(this)" class="btn btn-primary " role="button">Toggle Switch</a>
         <br/>
         <a href="/" class="btn btn-primary btn-xs" role="button">Refresh</a>
         <a href="/logs" class="btn btn-primary btn-xs" role="button">View Logs</a>
     </p>
+    </div>
 
     {% for event in events %}
     <div class="row">
-        <div class="col-md-12">
-            {{ event.event }} - {{event.dt | time_delta}}
+        <div class="col-xs-4">
+            {{ event.event }} {{event.dt | time_delta}} ago
         </div>
     </div>
     {% endfor %}
