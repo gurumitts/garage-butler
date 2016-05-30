@@ -34,34 +34,36 @@
     </div>
 
     <div class="row">
-    <p class="lead">Status
-        {% if status.event == 'door opened' %}
-            <span class="text-danger">Open</span>
-        {% endif %}
-        {% if status.event == 'door closed' %}
-            <span class="text-primary">Closed</span>
-        {% endif %}
-    </p>
+        <div class="col-xs-12">
+            <p class="lead">Status
+                {% if status.event == 'door opened' %}
+                <span class="text-danger">Open</span>
+                {% endif %}
+                {% if status.event == 'door closed' %}
+                <span class="text-primary">Closed</span>
+                {% endif %}
+            </p>
+        </div>
     </div>
 
     <div class="row">
-    <p class="lead">
-        <a onclick="toggle(this)" class="btn btn-primary " role="button">Toggle Switch</a>
-        <br/>
-        <a href="/" class="btn btn-primary btn-xs" role="button">Refresh</a>
-        <a href="/logs" class="btn btn-primary btn-xs" role="button">View Logs</a>
-    </p>
+        <div class="col-xs-12">
+            <p class="lead">
+                <a onclick="toggle(this)" class="btn btn-primary " role="button">Toggle Switch</a>
+                <br/>
+                <a href="/" class="btn btn-primary btn-xs" role="button">Refresh</a>
+                <a href="/logs" class="btn btn-primary btn-xs" role="button">View Logs</a>
+            </p>
+        </div>
     </div>
 
     {% for event in events %}
     <div class="row">
-        <div class="col-xs-4">
+        <div class="col-xs-12">
             {{ event.event }} {{event.dt | time_delta}} ago
         </div>
     </div>
     {% endfor %}
-
-
 
 
 </div>
@@ -83,5 +85,6 @@
             console.log("error" + response)
          });
     }
+
 
 </script>
