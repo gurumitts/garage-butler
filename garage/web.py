@@ -1,6 +1,8 @@
 from flask import Flask
 from flask import render_template, Response, request
 from datastore import DataStore
+from babel.dates import format_timedelta
+import datetime
 import json
 import logging
 import os
@@ -60,8 +62,17 @@ def view_log(log=None):
     return Response(contents, mimetype='text/plain')
 
 
+@app.template_filter('time_delta')
+def datatime_delta(dt):
+    now = datetime.datetime.now()
+    delta = now - dt
+    return format_timedelta(delta, locale='en_US')
+
+
 def start(_butler):
     global butler
     butler = _butler
     # app.debug = True
     app.run(host='0.0.0.0')
+
+

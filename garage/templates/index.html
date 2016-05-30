@@ -51,7 +51,7 @@
     {% for event in events %}
     <div class="row">
         <div class="col-md-12">
-            {{ event.event }} - {{event.dt}}
+            {{ event.event }} - {{event.dt | time_delta}}
         </div>
     </div>
     {% endfor %}
