@@ -63,9 +63,10 @@ def view_log(log=None):
 
 
 @app.template_filter('time_delta')
-def datatime_delta(dt):
+def datetime_delta(dt):
     now = datetime.datetime.now()
-    delta = now - dt
+    date = datetime.datetime.strptime(dt, "%Y-%m-%d %H:%M:%S")
+    delta = now - date
     return format_timedelta(delta, locale='en_US')
 
 
