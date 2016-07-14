@@ -4,6 +4,7 @@ import web
 from butler import Butler
 from datastore import DataStore
 
+
 def start():
     fileConfig('conf/log.conf')
     logging.getLogger('garage').log(logging.DEBUG, 'Log setup complete')
