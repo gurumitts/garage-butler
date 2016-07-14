@@ -13,7 +13,6 @@ app = Flask(__name__)
 
 logs_location = '/var/log/garage'
 images_location = 'camera_images'
-
 camera = Camera()
 
 @app.route('/')
@@ -57,17 +56,20 @@ def view_log(log=None):
 
 @app.route('/image/')
 def image():
-    get_image()
+    return get_image()
 
 
 @app.route('/take-picture/')
 def take_pic():
-    camera.take_picture()
-    get_image()
+    if camera.take_picture():
+        return get_image()
+    else:
+        abort(503)
 
 
 def get_image():
     for pic in os.listdir(images_location):
+        print(pic)
         if pic.endswith('.jpg'):
             fo = open('%s/%s' % (images_location, pic), 'r')
             contents = fo.read()

@@ -43,7 +43,7 @@ class DataStore:
             cursor.close()
         return events
 
-    def get_events(self):
+    def get_last_event(self):
         cursor = self.connection.cursor()
         cursor.execute("""select datetime(dt,'localtime') as dt, event from events order by dt desc limit 1""")
         rows = cursor.fetchone()

@@ -13,7 +13,7 @@ def start():
     db.shutdown()
     logging.getLogger('garage').log(logging.DEBUG, 'Complete')
 
-    # butler = None
+    #butler = None
     butler = Butler()
 
     web.start(butler)
