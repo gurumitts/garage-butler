@@ -43,6 +43,18 @@ class DataStore:
             cursor.close()
         return events
 
+    def get_events(self):
+        cursor = self.connection.cursor()
+        cursor.execute("""select datetime(dt,'localtime') as dt, event from events order by dt desc limit 1""")
+        rows = cursor.fetchone()
+        event = {}
+        if rows is not None:
+            for row in rows:
+                for key in row.keys():
+                    event[key.lower()] = row[key]
+            cursor.close()
+        return event
+
     def get_status(self):
         cursor = self.connection.cursor()
         cursor.execute("""select datetime(dt,'localtime') as dt, event,

@@ -1,0 +1,5 @@
+#to get started: Make a copy of this file and change the values below to your environment
+[DEFAULT]
+
+[camera]
+camera_cmd=avconv -i "rtsp://user:password@host/url/to/video/stream" -vsync 1 -r 1 -an -y -ss 00:0:04 -t 00:00:01 camera_images/img%00d.jpg

@@ -1,19 +1,23 @@
 from flask import Flask
-from flask import render_template, Response, request
+from flask import render_template, Response, request, abort
 from datastore import DataStore
 from babel.dates import format_timedelta
+from camera import Camera
 import datetime
 import json
 import logging
 import os
 
+
 app = Flask(__name__)
 
 logs_location = '/var/log/garage'
+images_location = 'camera_images'
 
+camera = Camera()
 
 @app.route('/')
-def index(name=None):
+def index():
     db = DataStore()
     status = db.get_status()
     events = db.get_events()
@@ -21,14 +25,14 @@ def index(name=None):
 
 
 @app.route('/status')
-def status(name=None):
+def status():
     db = DataStore()
     status = db.get_status()
     return json.dumps(status)
 
 
 @app.route('/events')
-def events(name=None):
+def events():
     db = DataStore()
     events = db.get_events()
     return json.dumps(events)
@@ -43,6 +47,36 @@ def logs(log=None):
     return render_template('logs.html', logs=logs)
 
 
+@app.route('/logs/<log>')
+def view_log(log=None):
+    fo = open('%s/%s' % (logs_location, log), 'r')
+    contents = fo.read()
+    fo.close()
+    return Response(contents, mimetype='text/plain')
+
+
+@app.route('/image/')
+def image():
+    get_image()
+
+
+@app.route('/take-picture/')
+def take_pic():
+    camera.take_picture()
+    get_image()
+
+
+def get_image():
+    for pic in os.listdir(images_location):
+        if pic.endswith('.jpg'):
+            fo = open('%s/%s' % (images_location, pic), 'r')
+            contents = fo.read()
+            fo.close()
+            return Response(contents, mimetype='image/jpeg')
+            pass
+    abort(404)
+
+
 @app.route('/toggle', methods=['POST'])
 def toggle():
     if request.method == 'POST':
@@ -53,13 +87,6 @@ def toggle():
         else:
             return 'no butler'
     return 'ko'
-
-
-@app.route('/logs/<log>')
-def view_log(log=None):
-    fo = open('%s/%s' %(logs_location, log), 'r')
-    contents = fo.read()
-    return Response(contents, mimetype='text/plain')
 
 
 @app.template_filter('time_delta')
@@ -74,6 +101,5 @@ def start(_butler):
     global butler
     butler = _butler
     # app.debug = True
-    app.run(host='0.0.0.0')
-
+    app.run(host='0.0.0.0', threaded=True)
 
