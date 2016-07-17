@@ -61,7 +61,7 @@ def image():
 
 @app.route('/take-picture/')
 def take_pic():
-    if camera.take_picture():
+    if camera.take_picture(skip_delay=True):
         return get_image()
     else:
         abort(503)
