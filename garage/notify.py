@@ -36,7 +36,6 @@ class Notify:
         payload = msg.payload.decode("utf-8")
         if msg.topic == MQ_HA_NOTIFY_TOPIC and payload == 'HA_STARTED':
             _LOG.info("Homeassistant restarted. Sending current state")
-            self._mq_reconnect(force=True)
             self.notify()
         elif msg.topic == MQ_COMMAND_TOPIC:
             _LOG.info("command recieved {0}".format(payload))
