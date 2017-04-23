@@ -42,7 +42,7 @@ class Butler:
         logging.getLogger('garage').info('Butler is starting...')
         logging.getLogger('garage').info('AWS: region=%s, topic=%s' % (REGION, TOPIC))
         self.camera = Camera()
-        self.notify = Notify()
+        self.notify = Notify(self)
         GPIO.add_event_detect(button_pin, GPIO.FALLING, callback=self.door_check, bouncetime=1000)
         scheduler.start()
         scheduler.add_job(self.status_check, 'interval', minutes=2)
