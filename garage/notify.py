@@ -1,13 +1,12 @@
 import ConfigParser
 import json
-from datastore import DataStore
 import os
 import logging
 import time
 
 import paho.mqtt.client as mqtt
 
-from garage import DataStore
+from datastore import DataStore
 
 
 _LOG = logging.getLogger('garage')
@@ -15,11 +14,6 @@ _LOG = logging.getLogger('garage')
 MQ_HA_NOTIFY_TOPIC = 'home/notification'
 MQ_STATUS_TOPIC = 'home/garage/door1/status'
 MQ_COMMAND_TOPIC = 'home/garage/door1/cmd'
-
-
-def get_db():
-    db = DataStore()
-    return db
 
 
 class Notify:
@@ -49,7 +43,7 @@ class Notify:
 
     def notify(self):
         self._mq_reconnect()
-        db = get_db()
+        db = DataStore()
         status = db.get_status()
         msg = json.dumps(status)
         db.shutdown()
