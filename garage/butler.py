@@ -58,6 +58,7 @@ class Butler:
             if status != self.last_status:
                 db.record_door_closed()
                 logging.getLogger('garage').info('Door closed')
+                self.notify.notify()
             else:
                 pass
                 # logging.getLogger('garage').info('Door closed again')
@@ -65,13 +66,13 @@ class Butler:
             if status != self.last_status:
                 db.record_door_opened()
                 logging.getLogger('garage').info('Door opened')
+                self.notify.notify()
                 self.camera.take_picture()
             else:
                 pass
                 # logging.getLogger('garage').info('Door opened again')
         db.shutdown()
         self.last_status = status
-        self.notify.notify()
 
 
     def status_check(self):
