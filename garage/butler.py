@@ -45,7 +45,7 @@ class Butler:
         self.notify = Notify(self)
         GPIO.add_event_detect(button_pin, GPIO.FALLING, callback=self.door_check, bouncetime=1000)
         scheduler.start()
-        scheduler.add_job(self.status_check, 'interval', minutes=2)
+        scheduler.add_job(self.status_check, 'interval', minutes=1)
         self.last_notification = datetime.datetime.strptime('Jun 1 2005  1:00PM', '%b %d %Y %I:%M%p')
         self.last_status = GPIO.input(button_pin)
 
@@ -91,6 +91,7 @@ class Butler:
             self._notify(status, settings)
         else:
             logging.getLogger('garage').info('nothing to do')
+        self.notify.notify()
 
     def toggle_switch(self):
         logging.getLogger('garage').info('toggle switch')
