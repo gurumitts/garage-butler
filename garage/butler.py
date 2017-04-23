@@ -8,6 +8,8 @@ import boto.sns
 import os
 import datetime
 from camera import Camera
+from notify import Notify
+
 scheduler = BackgroundScheduler()
 
 # gpio pin for door sensor and relay
@@ -40,6 +42,7 @@ class Butler:
         logging.getLogger('garage').info('Butler is starting...')
         logging.getLogger('garage').info('AWS: region=%s, topic=%s' % (REGION, TOPIC))
         self.camera = Camera()
+        self.notify = Notify()
         GPIO.add_event_detect(button_pin, GPIO.FALLING, callback=self.door_check, bouncetime=1000)
         scheduler.start()
         scheduler.add_job(self.status_check, 'interval', minutes=2)
@@ -66,8 +69,10 @@ class Butler:
             else:
                 pass
                 # logging.getLogger('garage').info('Door opened again')
-        self.last_status = status
         db.shutdown()
+        self.last_status = status
+        self.notify.notify()
+
 
     def status_check(self):
         logging.getLogger('garage').info('checking status')
