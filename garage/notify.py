@@ -28,6 +28,7 @@ class Notify:
         self.mq_client = mqtt.Client()
         self.mq_connected = False
         self._mq_reconnect(force=True)
+        self.notify()
 
     def on_mq_message(self, client, userdata, msg):
         """Perform the requested action.
