@@ -61,7 +61,7 @@ class Notify:
         while not self.mq_connected:
             try:
                 self.mq_client = mqtt.Client()
-                self.mq_client.connect(host=self.broker)
+                self.mq_client.connect(host=self.broker, keepalive=10)
                 self.mq_client.subscribe(MQ_COMMAND_TOPIC)
                 self.mq_client.subscribe(MQ_HA_NOTIFY_TOPIC)
                 self.mq_client.on_message = self.on_mq_message
