@@ -68,4 +68,6 @@ class Notify:
                 _LOG.error("Could not connect to MQ: {0}".format(ex))
                 _LOG.warning("Trying again in 5 seconds...")
                 time.sleep(5)
+        self.mq_client.reconnect()
+
 
