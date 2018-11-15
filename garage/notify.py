@@ -25,7 +25,10 @@ class Notify:
         config.read(config_file)
         self.butler = butler
         self.broker = config.get('mqtt', 'broker')
-        self.mq_client = mqtt.Client()
+        self.broker_user = config.get('mqtt', 'broker_user')
+        self.broker_pass = config.get('mqtt', 'broker_pass')
+        self.mq_client = mqtt.Client(client_id='garage_butler')
+        self.mq_client.username_pw_set(self.broker_user, password=self.broker_pass)
         self.mq_connected = False
         self._mq_reconnect(force=True)
         self.notify()
@@ -60,7 +63,8 @@ class Notify:
             self.mq_connected = False
         while not self.mq_connected:
             try:
-                self.mq_client = mqtt.Client()
+                self.mq_client = mqtt.Client(client_id='garage_butler')
+                self.mq_client.username_pw_set(self.broker_user, password=self.broker_pass)
                 self.mq_client.connect(host=self.broker, keepalive=10)
                 self.mq_client.subscribe(MQ_COMMAND_TOPIC)
                 self.mq_client.subscribe(MQ_HA_NOTIFY_TOPIC)
