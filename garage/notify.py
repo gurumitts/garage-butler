@@ -45,10 +45,10 @@ class Notify:
             self.butler.toggle_switch()
 
     def on_mq_connect(self, client, userdata, rc):
-        _LOG.warning('Client on_connect called.')
+        _LOG.info('Client on_connect called.')
         self.mq_client.subscribe(MQ_COMMAND_TOPIC)
         self.mq_client.subscribe(MQ_HA_NOTIFY_TOPIC)
-        _LOG.warning('subscriptions refreshed')
+        _LOG.info('subscriptions refreshed')
 
     def notify(self):
         self._mq_reconnect()
