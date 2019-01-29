@@ -3,7 +3,6 @@ import time
 from datastore import DataStore
 import logging
 from apscheduler.schedulers.background import BackgroundScheduler
-import os
 import datetime
 from notify import Notify
 
@@ -30,7 +29,6 @@ class Butler:
 
     def __init__(self):
         logging.getLogger('garage').info('Butler is starting...')
-        logging.getLogger('garage').info('AWS: region=%s, topic=%s' % (REGION, TOPIC))
         self.notify = Notify(self)
         GPIO.add_event_detect(button_pin, GPIO.FALLING, callback=self.door_check, bouncetime=1000)
         scheduler.start()
