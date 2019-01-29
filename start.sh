@@ -22,6 +22,4 @@ git pull
 
 #rm -f db/app.sqlite3.db
 
-source aws_creds
-
 python run.py $1

@@ -62,7 +62,6 @@ target/
 .ipynb_checkpoints
 
 .idea
-aws_creds
 app.sqlite3.db
 app.conf
 img*.jpg

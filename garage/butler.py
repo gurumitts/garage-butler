@@ -3,11 +3,8 @@ import time
 from datastore import DataStore
 import logging
 from apscheduler.schedulers.background import BackgroundScheduler
-import boto
-import boto.sns
 import os
 import datetime
-from camera import Camera
 from notify import Notify
 
 scheduler = BackgroundScheduler()
@@ -16,15 +13,12 @@ scheduler = BackgroundScheduler()
 button_pin = 19
 relay_pin = 16
 
-#set up gpio
+# set up gpio
 print GPIO.VERSION
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(button_pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(relay_pin, GPIO.OUT)
 GPIO.output(relay_pin, 1)
-
-
-
 
 # aws vars
 REGION = 'us-east-1'
@@ -41,7 +35,6 @@ class Butler:
     def __init__(self):
         logging.getLogger('garage').info('Butler is starting...')
         logging.getLogger('garage').info('AWS: region=%s, topic=%s' % (REGION, TOPIC))
-        self.camera = Camera()
         self.notify = Notify(self)
         GPIO.add_event_detect(button_pin, GPIO.FALLING, callback=self.door_check, bouncetime=1000)
         scheduler.start()
@@ -67,13 +60,11 @@ class Butler:
                 db.record_door_opened()
                 logging.getLogger('garage').info('Door opened')
                 self.notify.notify()
-                self.camera.take_picture()
             else:
                 pass
                 # logging.getLogger('garage').info('Door opened again')
         db.shutdown()
         self.last_status = status
-
 
     def status_check(self):
         logging.getLogger('garage').info('checking status')
@@ -83,14 +74,6 @@ class Butler:
         db.shutdown()
         logging.getLogger('garage').info('status is %s' % status)
         logging.getLogger('garage').info('setting are %s' % settings)
-        logging.getLogger('garage').info('send? %s' %
-                                         int(status['elapsed_minutes']) > int(settings['warning_threshold_mins']))
-        if status['event'] == 'door opened' and \
-                        int(status['elapsed_minutes']) > int(settings['warning_threshold_mins']):
-            logging.getLogger('garage').info('sending notification')
-            self._notify(status, settings)
-        else:
-            logging.getLogger('garage').info('nothing to do')
         self.notify.notify()
 
     def toggle_switch(self):
@@ -100,17 +83,7 @@ class Butler:
         GPIO.output(relay_pin, 1)
 
     def _notify(self, status, settings):
-        notification_mins = self._mins_since_last_notification()
-        if notification_mins >= settings['notify_interval_mins']:
-            msg = 'Door has been open for %s mins' % status['elapsed_minutes']
-            conn = boto.sns.connect_to_region(REGION)
-            pub = conn.publish(topic=TOPIC, message=msg)
-            logging.getLogger('garage').info('SNS called successfully')
-            self.last_notification = datetime.datetime.now()
-        else:
-            logging.getLogger('garage').info('Not sending notification. Interval: %s, '
-                                             'Last notification was sent %s minuts ago' %
-                                             (settings['notify_interval_mins'], notification_mins))
+        pass
 
     def _mins_since_last_notification(self):
         delta = datetime.datetime.now() - self.last_notification

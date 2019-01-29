@@ -2,7 +2,6 @@ from flask import Flask
 from flask import render_template, Response, request, abort
 from datastore import DataStore
 from babel.dates import format_timedelta
-from camera import Camera
 import datetime
 import json
 import logging
@@ -13,7 +12,7 @@ app = Flask(__name__)
 
 logs_location = '/var/log/garage'
 images_location = 'camera_images'
-camera = Camera()
+
 
 @app.route('/')
 def index():
@@ -57,14 +56,6 @@ def view_log(log=None):
 @app.route('/image/')
 def image():
     return get_image()
-
-
-@app.route('/take-picture/')
-def take_pic():
-    if camera.take_picture(skip_delay=True):
-        return get_image()
-    else:
-        abort(503)
 
 
 def get_image():
