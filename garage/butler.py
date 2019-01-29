@@ -20,10 +20,6 @@ GPIO.setup(button_pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(relay_pin, GPIO.OUT)
 GPIO.output(relay_pin, 1)
 
-# aws vars
-REGION = 'us-east-1'
-TOPIC = os.environ['SNS_TOPIC_ARN']
-
 
 def get_db():
     db = DataStore()
