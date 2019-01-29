@@ -44,9 +44,11 @@ class Notify:
             _LOG.info("command recieved {0}".format(payload))
             self.butler.toggle_switch()
 
-    def on_mq_disconnect(self, client, userdata, rc):
-        _LOG.warning('Client on_disconnect called.')
-        self._mq_reconnect(force=True)
+    def on_mq_connect(self, client, userdata, rc):
+        _LOG.warning('Client on_connect called.')
+        self.mq_client.subscribe(MQ_COMMAND_TOPIC)
+        self.mq_client.subscribe(MQ_HA_NOTIFY_TOPIC)
+        _LOG.warning('subscriptions refreshed')
 
     def notify(self):
         self._mq_reconnect()
@@ -65,11 +67,9 @@ class Notify:
             try:
                 self.mq_client = mqtt.Client(client_id='garage_butler')
                 self.mq_client.username_pw_set(self.broker_user, password=self.broker_pass)
-                self.mq_client.connect(host=self.broker)
-                self.mq_client.subscribe(MQ_COMMAND_TOPIC)
-                self.mq_client.subscribe(MQ_HA_NOTIFY_TOPIC)
+                self.mq_client.on_connect = self.on_mq_connect
                 self.mq_client.on_message = self.on_mq_message
-                self.on_mq_disconnect = self.on_mq_disconnect
+                self.mq_client.connect(host=self.broker)
                 self.mq_client.loop_start()
                 self.mq_connected = True
                 _LOG.info("Connected to MQ!")
