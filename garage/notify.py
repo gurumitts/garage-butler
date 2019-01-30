@@ -27,9 +27,6 @@ class Notify:
         self.broker = config.get('mqtt', 'broker')
         self.broker_user = config.get('mqtt', 'broker_user')
         self.broker_pass = config.get('mqtt', 'broker_pass')
-        self.mq_client = mqtt.Client(client_id='garage_butler')
-        self.mq_client.username_pw_set(self.broker_user, password=self.broker_pass)
-        self.mq_connected = False
         self._mq_reconnect(force=True)
         self.notify()
 
