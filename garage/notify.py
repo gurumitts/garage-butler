@@ -41,7 +41,7 @@ class Notify:
             _LOG.info("command recieved {0}".format(payload))
             self.butler.toggle_switch()
 
-    def on_mq_connect(self, client, userdata, rc):
+    def on_mq_connect(self, client, userdata, flags, rc):
         _LOG.info('Client on_connect called.')
         self.mq_client.subscribe(MQ_COMMAND_TOPIC)
         self.mq_client.subscribe(MQ_HA_NOTIFY_TOPIC)
@@ -64,8 +64,8 @@ class Notify:
             try:
                 self.mq_client = mqtt.Client(client_id='garage_butler')
                 self.mq_client.username_pw_set(self.broker_user, password=self.broker_pass)
-                self.mq_client.on_connect = Notify.on_mq_connect
-                self.mq_client.on_message = Notify.on_mq_message
+                self.mq_client.on_connect = self.on_mq_connect
+                self.mq_client.on_message = self.on_mq_message
                 self.mq_client.connect(host=self.broker)
                 self.mq_client.loop_start()
                 self.mq_connected = True
