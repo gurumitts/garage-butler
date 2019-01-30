@@ -64,8 +64,8 @@ class Notify:
             try:
                 self.mq_client = mqtt.Client(client_id='garage_butler')
                 self.mq_client.username_pw_set(self.broker_user, password=self.broker_pass)
-                self.mq_client.on_connect = self.on_mq_connect
-                self.mq_client.on_message = self.on_mq_message
+                self.mq_client.on_connect = Notify.on_mq_connect
+                self.mq_client.on_message = Notify.on_mq_message
                 self.mq_client.connect(host=self.broker)
                 self.mq_client.loop_start()
                 self.mq_connected = True
